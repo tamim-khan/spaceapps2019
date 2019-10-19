@@ -9,23 +9,34 @@ import { HttpClientModule } from '@angular/common/http';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireStorageModule } from '@angular/fire/storage';
+import { MatProgressSpinnerModule, MatButtonModule, MatDialogModule, MatIconModule } from '@angular/material';
+
 import { keys } from '../keys';
+import { FireReportComponent } from './fire-report/fire-report.component';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MapComponent
+    MapComponent,
+    FireReportComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    MatProgressSpinnerModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
     BrowserAnimationsModule,
     HttpClientModule,
     AngularFireModule.initializeApp(keys.firebaseConfig),
     AngularFireDatabaseModule,
+    AngularFirestoreModule,
     AngularFireStorageModule
   ],
   providers: [],
+  entryComponents: [FireReportComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
