@@ -63,16 +63,8 @@ export class MapComponent implements OnInit {
       type: 'heatmap',
       source: {
         type: 'geojson',
-        data: data
+        data
       },
-      // paint: {
-      //   'circle-radius': 3,
-      //   'circle-color': '#ff8c00',
-      //   'circle-stroke-color': 'white',
-      //   'circle-stroke-width': 1,
-      //   'circle-opacity': 0.5
-      // }
-
       paint: {
         // Increase the heatmap weight based on frequency and property magnitude
         'heatmap-weight': [
