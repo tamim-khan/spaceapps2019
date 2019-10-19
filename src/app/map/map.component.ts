@@ -21,7 +21,6 @@ export class MapComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private fireStore: AngularFireStorage,
-    private db: AngularFireDatabase,
     private dialog: MatDialog,
   ) { }
 
@@ -63,7 +62,7 @@ export class MapComponent implements OnInit {
       type: 'circle',
       source: {
         type: 'geojson',
-        data: data
+        data
       },
       paint: {
         'circle-radius': 3,

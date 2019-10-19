@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule, MatButtonModule, MatDialogModule, MatIconModu
 
 import { keys } from '../keys';
 import { FireReportComponent } from './fire-report/fire-report.component';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { FireReportComponent } from './fire-report/fire-report.component';
     HttpClientModule,
     AngularFireModule.initializeApp(keys.firebaseConfig),
     AngularFireDatabaseModule,
+    AngularFirestoreModule,
     AngularFireStorageModule
   ],
   providers: [],

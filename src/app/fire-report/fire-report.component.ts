@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { MatDialogRef } from '@angular/material';
 
 @Component({
   selector: 'app-fire-report',
@@ -6,8 +8,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./fire-report.component.scss']
 })
 export class FireReportComponent implements OnInit {
+  showForm = false;
 
-  constructor() { }
+  constructor(
+    private db: AngularFirestore,
+    private dialogRef: MatDialogRef<FireReportComponent>
+  ) { }
 
   ngOnInit() {
   }
@@ -20,8 +26,11 @@ export class FireReportComponent implements OnInit {
 
     navigator.geolocation.getCurrentPosition(
       pos => {
-        console.log('Success ');
-        console.log(pos);
+        if (pos) {
+          this.addReport(pos.coords.longitude, pos.coords.latitude);
+        }
+
+        this.dialogRef.close();
       },
       err => {
         console.log('Error ' + err);
@@ -29,4 +38,16 @@ export class FireReportComponent implements OnInit {
     );
   }
 
+  addReport(long: number, lat: number) {
+    this.db.collection('fires').add({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [long, lat]
+      },
+      properties: {
+        date: new Date()
+      }
+    });
+  }
 }
