@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { environment } from '../../environments/environment';
+import { TranslationWidth } from '@angular/common';
 
 @Component({
   selector: 'app-map',
@@ -17,7 +18,7 @@ export class MapComponent implements OnInit {
     mapboxgl.accessToken = environment.mapbox.accessToken;
     this.map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v9'
+      style: 'mapbox://styles/mapbox/streets-v11'
       });
   }
 
