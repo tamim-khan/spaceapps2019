@@ -38,6 +38,32 @@ export class MapComponent implements OnInit {
     });
   }
 
+  nearMe() {
+    if (!navigator) {
+      console.log('Error sorry no nav');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        if (pos) {
+          // pan to
+          // this.addReport(pos.coords.longitude, pos.coords.latitude);
+          this.map.flyTo({
+            center: [
+              pos.coords.longitude,
+              pos.coords.latitude
+          ],
+          zoom: 9
+          });
+        }
+      },
+      err => {
+        console.log('Error ' + err);
+      }
+    );
+  }
+
   report() {
     this.dialog.open(FireReportComponent);
   }
