@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
-import { environment } from '../../environments/environment';
 import { TranslationWidth } from '@angular/common';
+import { keys } from '../../keys';
 
 @Component({
   selector: 'app-map',
@@ -9,17 +9,23 @@ import { TranslationWidth } from '@angular/common';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
-
-  map: any;
+  map: mapboxgl.Map;
+  mapNav: mapboxgl.NavigationControl;
 
   constructor() { }
 
   ngOnInit() {
-    mapboxgl.accessToken = environment.mapbox.accessToken;
+    // @ts-ignore
+    mapboxgl.accessToken = keys.mapbox;
+
     this.map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v11'
-      });
+      style: 'mapbox://styles/mapbox/streets-v11',
+      zoom: 1,
+    });
+
+    this.mapNav = new mapboxgl.NavigationControl();
+    this.map.addControl(this.mapNav, 'bottom-right');
   }
 
 }
