@@ -1,1 +1,7 @@
-<div id="map"></div>
+<div class="button-container">
+  <button mat-raised-button color="primary" (click)="report()">Report Fire</button>
+</div>
+
+<div id="map">
+  <mat-spinner class="loading" *ngIf="!hasData"></mat-spinner>
+</div>

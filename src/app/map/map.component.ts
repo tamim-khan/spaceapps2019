@@ -4,6 +4,9 @@ import { keys } from '../../keys';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/storage';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { MatDialog } from '@angular/material';
+import { FireReportComponent } from '../fire-report/fire-report.component';
 
 @Component({
   selector: 'app-map',
@@ -13,17 +16,31 @@ import { AngularFireStorage } from '@angular/fire/storage';
 export class MapComponent implements OnInit {
   map: mapboxgl.Map;
   mapNav: mapboxgl.NavigationControl;
+  hasData = false;
 
-  constructor(private http: HttpClient, private fireStore: AngularFireStorage) { }
+  constructor(
+    private http: HttpClient,
+    private fireStore: AngularFireStorage,
+    private db: AngularFireDatabase,
+    private dialog: MatDialog,
+  ) { }
 
   ngOnInit() {
     this.initMap();
 
     this.map.on('load', () => {
+      console.log('done loading');
       this.fireStore.ref('world_fire_data_7d.json').getDownloadURL().subscribe(url => {
-        this.http.get(url).pipe(tap(res => this.addLayer(res))).subscribe();
+        this.http.get(url).pipe(tap(res => {
+          this.addLayer(res);
+          setTimeout(() => this.hasData = true, 1200);
+        })).subscribe();
       });
     });
+  }
+
+  report() {
+    this.dialog.open(FireReportComponent);
   }
 
   private initMap() {
