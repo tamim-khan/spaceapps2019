@@ -47,14 +47,12 @@ export class MapComponent implements OnInit {
     navigator.geolocation.getCurrentPosition(
       pos => {
         if (pos) {
-          // pan to
-          // this.addReport(pos.coords.longitude, pos.coords.latitude);
           this.map.flyTo({
             center: [
               pos.coords.longitude,
               pos.coords.latitude
           ],
-          zoom: 9
+          zoom: 7
           });
         }
       },
