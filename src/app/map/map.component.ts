@@ -106,8 +106,9 @@ export class MapComponent implements OnInit {
       let date: Date;
       // @ts-ignore
       const coords = e.features[0].geometry.coordinates;
-      const userReport = e.source === 'user';
+      const userReport = e.features[0].properties.userReport;
       const type = userReport ? 'User Report' : 'NASA Report';
+      const desc = e.features[0].properties.description;
       let time = 'N/A';
 
       console.log(e.features[0]);
@@ -128,10 +129,16 @@ export class MapComponent implements OnInit {
         <b>Date Reported:</b> ${date.toLocaleDateString()}<br/>
         <b>Time Reported:</b> ${time}<br/>
         <b>Coordinates:</b> <br/>
-          ${coords[0]},<br/>
-          ${coords[1]}<br/>
+        <p style="margin: 0px 0px 0px 10px;"><b>Long</b>: ${coords[0]},</p>
+        <p style="margin: 0px 0px 0px 10px;"><b>Lat</b>: ${coords[1]}</p>
         <b>Type:</b> ${type}<br/>
       `;
+
+      if (desc != null && desc !== '' && desc !== ' ') {
+        html += `
+          <b>Description:</b> ${desc}<br/>
+        `;
+      }
 
       if (!userReport) {
         const day = e.features[0].properties.DAYNIGHT === 'D' ? 'Day' : 'Night';

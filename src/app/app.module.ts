@@ -10,14 +10,14 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 // tslint:disable-next-line:max-line-length
-import { MatProgressSpinnerModule, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatSnackBar, MatSnackBarModule, MatSliderModule, MatDividerModule, MatCheckboxModule } from '@angular/material';
+import { MatProgressSpinnerModule, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatSnackBar, MatSnackBarModule, MatSliderModule, MatDividerModule, MatCheckboxModule, MatFormFieldModule, MatInputModule } from '@angular/material';
 
 import { keys } from '../keys';
 import { FireReportComponent } from './fire-report/fire-report.component';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AboutComponent } from './about/about.component';
 import { FilterComponent } from './filter/filter.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -30,11 +30,14 @@ import { FormsModule } from '@angular/forms';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    ReactiveFormsModule,
     FormsModule,
     MatProgressSpinnerModule,
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatDividerModule,
     MatDialogModule,
     MatSnackBarModule,
