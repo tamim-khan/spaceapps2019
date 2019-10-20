@@ -135,8 +135,11 @@ export class MapComponent implements OnInit {
 
       if (!userReport) {
         const day = e.features[0].properties.DAYNIGHT === 'D' ? 'Day' : 'Night';
+        const confidence = e.features[0].properties.CONFIDENCE;
+
         html += `
           <b>Day or Night:</b> ${day}<br/>
+          <b>Report Confidence:</b> ${confidence}%</br>
         `;
       }
 
