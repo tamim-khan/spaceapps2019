@@ -277,7 +277,7 @@ export class MapComponent implements OnInit {
           let date: Date;
 
           if (e.properties.date) {
-            date = new Date(e.properties.date.seconds);
+            date = new Date(e.properties.date.seconds * 1000);
           } else {
             date = new Date(e.properties.ACQ_DATE);
           }
