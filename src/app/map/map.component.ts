@@ -90,14 +90,20 @@ export class MapComponent implements OnInit {
   addPopup(id: string) {
     this.map.on('click', id + '-circles', e => {
       let date: Date;
+      let coords = [0, 0];
+
       if (e.features[0].properties.date) {
         date = new Date(JSON.parse(e.features[0].properties.date).seconds * 1000);
       } else {
         date = new Date(e.features[0].properties.ACQ_DATE);
       }
+
       new mapboxgl.Popup()
       .setLngLat(e.lngLat)
-      .setHTML(`<b>Date: ${date.toLocaleDateString()}</b>`)
+      .setHTML(`
+        <b>Date Reported:</b> ${date.toLocaleDateString()}<br/>
+        <b>Coordinates:</b> (${coords[0]}, ${coords[1]})
+      `)
       .addTo(this.map);
     });
 
