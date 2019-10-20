@@ -25,6 +25,9 @@
   </mat-toolbar-row>
 </mat-toolbar>
 
+
 <div id="map">
-  <mat-spinner class="loading" *ngIf="!hasData"></mat-spinner>
+  <div class="loading-container" *ngIf="!hasData">
+    <mat-spinner class="loading"></mat-spinner>
+  </div>
 </div>

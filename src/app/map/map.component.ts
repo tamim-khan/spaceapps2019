@@ -68,9 +68,12 @@ export class MapComponent implements OnInit {
       this.addLayer('user', '#ff0000');
       this.addLayer('nasa', '#ff8c00');
 
-      // Add custom fire data
+      this.snackBar.open('Loading Fire Reports...', 'Okay', { duration: 1000 });
+
+      // Load user data
       this.getUserData();
 
+      // Load NASA data
       this.storage.ref('world_fire_data_7d.json')
         .getDownloadURL()
         .pipe(
@@ -83,6 +86,7 @@ export class MapComponent implements OnInit {
 
             setTimeout(() => {
               this.hasData = true;
+              this.snackBar.dismiss();
               this.snackBar.open(
                 `Loaded ${res.features.length} data points (It may take a few seconds to populate the map...)`,
                 'Okay',
