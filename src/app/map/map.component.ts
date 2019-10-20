@@ -21,9 +21,14 @@ export class MapComponent implements OnInit {
   hasData = false;
   filterWindow = false;
   firstLayerId: string;
-  userData = {};
-  nasaData = {};
-  filterUpdated = new EventEmitter();
+  userData = {
+    type: 'FeatureCollection',
+    features: []
+  };
+  nasaData = {
+    type: 'FeatureCollection',
+    features: []
+  };
   filters = {
     showUserFires: true,
     showNasaFires: true,
@@ -75,7 +80,16 @@ export class MapComponent implements OnInit {
           this.http.get(url).pipe(tap((res: any) => {
             this.nasaData = res;
             this.updateData('nasa', res);
-            setTimeout(() => this.hasData = true, 2500);
+
+            setTimeout(() => {
+              this.hasData = true;
+              this.snackBar.open(
+                `Loaded ${res.features.length} data points (It may take a few seconds to populate the map...)`,
+                'Okay',
+                { duration: 1500 }
+              );
+            }, 2500);
+
             this.addPopup('nasa');
             this.addPopup('user');
           }))
@@ -90,6 +104,7 @@ export class MapComponent implements OnInit {
   addPopup(id: string) {
     this.map.on('click', id + '-circles', e => {
       let date: Date;
+      // TODO: Do this
       let coords = [0, 0];
 
       if (e.features[0].properties.date) {
@@ -138,6 +153,17 @@ export class MapComponent implements OnInit {
     );
   }
 
+  filterData(data: any, func: any) {
+    let d = {
+      type: 'FeatureCollection',
+      features: data.features.filter(func)
+    };
+
+    console.log(this.filters);
+    console.log(d);
+    return d;
+  }
+
   nearMe() {
     if (!navigator) {
       console.log('Error sorry no nav');
@@ -168,7 +194,11 @@ export class MapComponent implements OnInit {
 
   filter() {
     this.dialog.open(FilterComponent, {
-      data: this.filters
+      data: Object.assign({
+        total: this.nasaData.features.length + this.userData.features.length,
+        nasaFires: this.nasaData.features.length,
+        userFires: this.userData.features.length
+      }, this.filters)
     }).afterClosed()
       .pipe(take(1))
       .subscribe(res => {
@@ -183,6 +213,12 @@ export class MapComponent implements OnInit {
             time: 7
           };
 
+          this.setLayerVisibility('user', true);
+          this.setLayerVisibility('nasa', true);
+
+          this.updateData('user', this.userData);
+          this.updateData('nasa', this.nasaData);
+
           return;
         }
 
@@ -192,7 +228,33 @@ export class MapComponent implements OnInit {
         this.setLayerVisibility('user', res.showUserFires);
         this.setLayerVisibility('nasa', res.showNasaFires);
 
-        // TODO: Filter map data based on time if necessery
+        const now = new Date();
+
+        const filterDates = e => {
+          let date: Date;
+
+          if (e.properties.date) {
+            date = new Date(e.properties.date.seconds);
+          } else {
+            date = new Date(e.properties.ACQ_DATE);
+          }
+
+          let diff;
+
+          try {
+            diff = now.getTime() - date.getTime();
+          } catch (err) {
+            console.log(e);
+            console.error(err);
+          }
+
+          const dayDiff = Math.floor(diff / (24 * 60 * 60 * 1000));
+
+          return dayDiff <= this.filters.time;
+        };
+
+        this.updateData('nasa', this.filterData(this.nasaData, filterDates));
+        this.updateData('user', this.filterData(this.userData, filterDates));
       }
     );
   }
