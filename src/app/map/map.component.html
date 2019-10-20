@@ -1,7 +1,10 @@
-<div class="button-container">
-  <button mat-raised-button color="primary" (click)="report()">Report Fire</button>
-  <button mat-raised-button color="primary" (click)="nearMe()">Near Me</button>
-</div>
+<mat-toolbar color="primary">
+  <mat-toolbar-row class="toolbar">
+    <p class="title">Group Name</p>
+    <button mat-stroked-button (click)="report()">Report Fire</button>
+    <button mat-stroked-button (click)="nearMe()">Near Me</button>
+  </mat-toolbar-row>
+</mat-toolbar>
 
 <div id="map">
   <mat-spinner class="loading" *ngIf="!hasData"></mat-spinner>

@@ -9,7 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireStorageModule } from '@angular/fire/storage';
-import { MatProgressSpinnerModule, MatButtonModule, MatDialogModule, MatIconModule } from '@angular/material';
+import { MatProgressSpinnerModule, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule } from '@angular/material';
 
 import { keys } from '../keys';
 import { FireReportComponent } from './fire-report/fire-report.component';
@@ -28,6 +28,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
+    MatToolbarModule,
     BrowserAnimationsModule,
     HttpClientModule,
     AngularFireModule.initializeApp(keys.firebaseConfig),

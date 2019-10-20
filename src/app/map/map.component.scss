@@ -1,9 +1,3 @@
-.button-container {
-  display: flex;
-  justify-content: center;
-  margin: 20px;
-}
-
 #map {
   width: 100%;
   height: 90vh;
@@ -17,4 +11,16 @@
   left: 50%;
   pointer-events: none;
   z-index: 2;
+}
+
+.toolbar {
+  display: flex;
+}
+
+.title {
+  flex: 1;
+}
+
+button {
+  margin: 0px 5px 0px 5px;
 }
