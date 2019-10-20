@@ -7,6 +7,7 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { MatDialog } from '@angular/material';
 import { FireReportComponent } from '../fire-report/fire-report.component';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-map',
@@ -20,19 +21,35 @@ export class MapComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private fireStore: AngularFireStorage,
+    private storage: AngularFireStorage,
+    private db: AngularFirestore,
     private dialog: MatDialog,
   ) { }
 
   ngOnInit() {
     this.initMap();
 
+    // Add custom fire data
+    this.db.collection('fires').get().subscribe(snapshot => {
+      const jsonData = {
+        type: 'FeatureCollection',
+        features: []
+      };
+
+      snapshot.docs.forEach(doc => {
+        jsonData.features.push(doc.data());
+      });
+
+      this.addLayer(jsonData, 'user-fires', '#ff0000');
+    });
+
+    // Add layer with 7days of fire data
     this.map.on('load', () => {
       console.log('done loading');
-      this.fireStore.ref('world_fire_data_7d.json').getDownloadURL().subscribe(url => {
+      this.storage.ref('world_fire_data_7d.json').getDownloadURL().subscribe(url => {
         this.http.get(url).pipe(tap(res => {
-          this.addLayer(res);
-          setTimeout(() => this.hasData = true, 1200);
+          this.addLayer(res, 'world-fires', '#ff8c00');
+          setTimeout(() => this.hasData = true, 2000);
         })).subscribe();
       });
     });
@@ -80,10 +97,10 @@ export class MapComponent implements OnInit {
     this.map.addControl(this.mapNav, 'bottom-right');
   }
 
-  private addLayer(data: any) {
+  private addLayer(data: any, id: string, color: string) {
     // adding two layes one for heatmap and one for circle
     this.map.addLayer({
-      id: 'firemap-heatmap',
+      id: id + '-heatmap',
       type: 'heatmap',
       source: {
         type: 'geojson',
@@ -119,7 +136,7 @@ export class MapComponent implements OnInit {
           0.4, 'rgb(209,229,240)',
           0.6, 'rgb(253,219,199)',
           0.8, 'rgb(239,138,98)',
-          1, 'rgb(255,140,0)'
+          1, color
         ],
         // Adjust the heatmap radius by zoom level
         'heatmap-radius': [
@@ -141,7 +158,7 @@ export class MapComponent implements OnInit {
     });
 
     this.map.addLayer({
-      id: 'firemap-circle',
+      id: id + '-circle',
       type: 'circle',
       source: {
         type: 'geojson',
@@ -149,7 +166,7 @@ export class MapComponent implements OnInit {
       },
       paint: {
         'circle-radius': 3,
-        'circle-color': '#ff8c00',
+        'circle-color': color,
         'circle-stroke-color': 'white',
         'circle-stroke-width': 1,
         'circle-opacity': [

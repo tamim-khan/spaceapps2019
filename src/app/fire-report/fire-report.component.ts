@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef, MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-fire-report',
@@ -12,11 +12,11 @@ export class FireReportComponent implements OnInit {
 
   constructor(
     private db: AngularFirestore,
+    private snackbar: MatSnackBar,
     private dialogRef: MatDialogRef<FireReportComponent>
   ) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   geolocate() {
     if (!navigator) {
@@ -28,6 +28,7 @@ export class FireReportComponent implements OnInit {
       pos => {
         if (pos) {
           this.addReport(pos.coords.longitude, pos.coords.latitude);
+          this.snackbar.open('Added fire report', 'Okay', { duration: 1500 });
         }
 
         this.dialogRef.close();
