@@ -2,7 +2,7 @@ import { Component, OnInit, EventEmitter } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { keys } from '../../keys';
 import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs/operators';
+import { tap, take } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { FireReportComponent } from '../fire-report/fire-report.component';
@@ -64,7 +64,34 @@ export class MapComponent implements OnInit {
       this.addLayer('nasa', '#ff8c00');
 
       // Add custom fire data
-      this.db.collection('fires').get().subscribe(snapshot => {
+      this.getUserData();
+
+      this.storage.ref('world_fire_data_7d.json')
+        .getDownloadURL()
+        .pipe(
+          take(1)
+        )
+        .subscribe(url => {
+          this.http.get(url).pipe(tap((res: any) => {
+            this.nasaData = res;
+            this.updateData('nasa', res);
+            setTimeout(() => this.hasData = true, 2500);
+          }))
+          .pipe(
+            take(1)
+          ).subscribe();
+        }
+      );
+    });
+  }
+
+  getUserData() {
+    this.db.collection('fires')
+      .get()
+      .pipe(
+        take(1)
+      )
+      .subscribe(snapshot => {
         const jsonData = {
           type: 'FeatureCollection',
           features: []
@@ -76,16 +103,8 @@ export class MapComponent implements OnInit {
 
         this.userData = jsonData;
         this.updateData('user', jsonData as any);
-      });
-
-      this.storage.ref('world_fire_data_7d.json').getDownloadURL().subscribe(url => {
-        this.http.get(url).pipe(tap((res: any) => {
-          this.nasaData = res;
-          this.updateData('nasa', res);
-          setTimeout(() => this.hasData = true, 2500);
-        })).subscribe();
-      });
-    });
+      }
+    );
   }
 
   nearMe() {
@@ -119,7 +138,9 @@ export class MapComponent implements OnInit {
   filter() {
     this.dialog.open(FilterComponent, {
       data: this.filters
-    }).afterClosed().subscribe(res => {
+    }).afterClosed()
+      .pipe(take(1))
+      .subscribe(res => {
         if (!res) { return; }
 
         this.snackBar.open('Filters Updated (This may take a moment to load...)', 'Okay', { duration: 1500 });
@@ -141,7 +162,8 @@ export class MapComponent implements OnInit {
         this.setLayerVisibility('nasa', res.showNasaFires);
 
         // TODO: Filter map data based on time if necessery
-      });
+      }
+    );
   }
 
   about() {
