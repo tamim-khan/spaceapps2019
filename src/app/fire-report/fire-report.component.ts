@@ -28,7 +28,7 @@ export class FireReportComponent implements OnInit {
       pos => {
         if (pos) {
           this.addReport(pos.coords.longitude, pos.coords.latitude);
-          this.snackbar.open('Added fire report', 'Okay', { duration: 1500 });
+          this.snackbar.open('Added New Fire Report', 'Okay', { duration: 1500 });
         }
 
         this.dialogRef.close();

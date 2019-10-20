@@ -92,6 +92,9 @@ export class MapComponent implements OnInit {
     this.dialog.open(FireReportComponent);
   }
 
+  filter() {
+  }
+
   private initMap() {
     // @ts-ignore
     mapboxgl.accessToken = keys.mapbox;

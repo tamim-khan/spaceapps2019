@@ -9,7 +9,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireStorageModule } from '@angular/fire/storage';
-import { MatProgressSpinnerModule, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatSnackBar, MatSnackBarModule } from '@angular/material';
+// tslint:disable-next-line:max-line-length
+import { MatProgressSpinnerModule, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatSnackBar, MatSnackBarModule, MatSliderModule, MatDividerModule } from '@angular/material';
 
 import { keys } from '../keys';
 import { FireReportComponent } from './fire-report/fire-report.component';
@@ -27,8 +28,10 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
     MatProgressSpinnerModule,
     MatButtonModule,
     MatIconModule,
+    MatDividerModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatSliderModule,
     MatToolbarModule,
     BrowserAnimationsModule,
     HttpClientModule,
