@@ -31,6 +31,16 @@
   z-index: 2;
 }
 
+.logo {
+  background-image: url('/assets/logo.png');
+  background-size: cover;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 20px;
+  opacity: 0.9;
+}
+
 .title {
   flex: 1;
 }
