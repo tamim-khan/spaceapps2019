@@ -4,7 +4,6 @@ import { keys } from '../../keys';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { AngularFireDatabase } from '@angular/fire/database';
 import { MatDialog } from '@angular/material';
 import { FireReportComponent } from '../fire-report/fire-report.component';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -18,6 +17,7 @@ export class MapComponent implements OnInit {
   map: mapboxgl.Map;
   mapNav: mapboxgl.NavigationControl;
   hasData = false;
+  firstLayerId: string;
 
   constructor(
     private http: HttpClient,
@@ -45,11 +45,20 @@ export class MapComponent implements OnInit {
 
     // Add layer with 7days of fire data
     this.map.on('load', () => {
-      console.log('done loading');
+      const layers = this.map.getStyle().layers;
+
+      // tslint:disable-next-line:prefer-for-of
+      for (let i = 0; i < layers.length; i++) {
+        if (layers[i].type === 'symbol') {
+          this.firstLayerId = layers[i].id;
+          break;
+        }
+      }
+
       this.storage.ref('world_fire_data_7d.json').getDownloadURL().subscribe(url => {
         this.http.get(url).pipe(tap(res => {
           this.addLayer(res, 'world-fires', '#ff8c00');
-          setTimeout(() => this.hasData = true, 2000);
+          setTimeout(() => this.hasData = true, 2500);
         })).subscribe();
       });
     });
@@ -155,7 +164,7 @@ export class MapComponent implements OnInit {
           9, 0
         ]
       }
-    });
+    }, this.firstLayerId);
 
     this.map.addLayer({
       id: id + '-circle',
@@ -184,7 +193,9 @@ export class MapComponent implements OnInit {
           8, 1
         ]
       }
-    });
+    }, this.firstLayerId);
+
+    console.log(this.map.getLayer(id + '-heatmap'));
   }
 
 }

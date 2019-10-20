@@ -1,13 +1,17 @@
-<div class="button-container" *ngIf="!showForm">
-  <button mat-raised-button color="primary" (click)="geolocate()">
-    Use Current Location
-    <mat-icon>gps_fixed</mat-icon>
-  </button>
+<div *ngIf="!showForm">
+  <p class="title">Report A New Fire</p>
 
-  <button mat-raised-button color="primary" (click)="showForm = true;">
-    Enter Manually
-    <mat-icon>assignment</mat-icon>
-  </button>
+  <div class="button-container">
+    <button mat-raised-button color="primary" (click)="geolocate()">
+      Use Current Location
+      <mat-icon>gps_fixed</mat-icon>
+    </button>
+
+    <button mat-raised-button color="primary" (click)="showForm = true;">
+      Enter Manually
+      <mat-icon>assignment</mat-icon>
+    </button>
+  </div>
 </div>
 
 <div class="form-container" *ngIf="showForm">
