@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { keys } from '../../keys';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSnackBar } from '@angular/material';
 import { FireReportComponent } from '../fire-report/fire-report.component';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { AboutComponent } from '../about/about.component';
+import { FilterComponent } from '../filter/filter.component';
 
 @Component({
   selector: 'app-map',
@@ -17,31 +19,31 @@ export class MapComponent implements OnInit {
   map: mapboxgl.Map;
   mapNav: mapboxgl.NavigationControl;
   hasData = false;
+  filterWindow = false;
   firstLayerId: string;
+  userData = {};
+  nasaData = {};
+  filterUpdated = new EventEmitter();
+  filters = {
+    showUserFires: true,
+    showNasaFires: true,
+    time: 7
+  };
+
+  get hasFilters() {
+    return this.filters.time !== 7 || this.filters.showUserFires !== true || this.filters.showNasaFires !== true;
+  }
 
   constructor(
     private http: HttpClient,
     private storage: AngularFireStorage,
     private db: AngularFirestore,
     private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
     this.initMap();
-
-    // Add custom fire data
-    this.db.collection('fires').get().subscribe(snapshot => {
-      const jsonData = {
-        type: 'FeatureCollection',
-        features: []
-      };
-
-      snapshot.docs.forEach(doc => {
-        jsonData.features.push(doc.data());
-      });
-
-      this.addLayer(jsonData, 'user-fires', '#ff0000');
-    });
 
     // Add layer with 7days of fire data
     this.map.on('load', () => {
@@ -55,9 +57,31 @@ export class MapComponent implements OnInit {
         }
       }
 
+      this.map.addSource('user', { type: 'geojson', data: null });
+      this.map.addSource('nasa', { type: 'geojson', data: null });
+
+      this.addLayer('user', '#ff0000');
+      this.addLayer('nasa', '#ff8c00');
+
+      // Add custom fire data
+      this.db.collection('fires').get().subscribe(snapshot => {
+        const jsonData = {
+          type: 'FeatureCollection',
+          features: []
+        };
+
+        snapshot.docs.forEach(doc => {
+          jsonData.features.push(doc.data());
+        });
+
+        this.userData = jsonData;
+        this.updateData('user', jsonData as any);
+      });
+
       this.storage.ref('world_fire_data_7d.json').getDownloadURL().subscribe(url => {
-        this.http.get(url).pipe(tap(res => {
-          this.addLayer(res, 'world-fires', '#ff8c00');
+        this.http.get(url).pipe(tap((res: any) => {
+          this.nasaData = res;
+          this.updateData('nasa', res);
           setTimeout(() => this.hasData = true, 2500);
         })).subscribe();
       });
@@ -93,6 +117,35 @@ export class MapComponent implements OnInit {
   }
 
   filter() {
+    this.dialog.open(FilterComponent, {
+      data: this.filters
+    }).afterClosed().subscribe(res => {
+        if (!res) { return; }
+
+        this.snackBar.open('Filters Updated (This may take a moment to load...)', 'Okay', { duration: 1500 });
+
+        if (res.reset === true) {
+          this.filters = {
+            showUserFires: true,
+            showNasaFires: true,
+            time: 7
+          };
+
+          return;
+        }
+
+        res.reset = undefined;
+        this.filters = res;
+
+        this.setLayerVisibility('user', res.showUserFires);
+        this.setLayerVisibility('nasa', res.showNasaFires);
+
+        // TODO: Filter map data based on time if necessery
+      });
+  }
+
+  about() {
+    this.dialog.open(AboutComponent);
   }
 
   private initMap() {
@@ -109,14 +162,24 @@ export class MapComponent implements OnInit {
     this.map.addControl(this.mapNav, 'bottom-right');
   }
 
-  private addLayer(data: any, id: string, color: string) {
+  private setLayerVisibility(id: string, state: boolean) {
+    const vis = state ? 'visible' : 'none';
+    this.map.setLayoutProperty(id + '-heatmap', 'visibility', vis);
+    this.map.setLayoutProperty(id + '-circles', 'visibility', vis);
+  }
+
+  private updateData(id: string, data: any) {
+    (this.map.getSource(id) as mapboxgl.GeoJSONSource).setData(data);
+  }
+
+  private addLayer(id: string, color: string) {
     // adding two layes one for heatmap and one for circle
     this.map.addLayer({
       id: id + '-heatmap',
       type: 'heatmap',
-      source: {
-        type: 'geojson',
-        data
+      source: id,
+      layout: {
+        visibility: 'visible'
       },
       paint: {
         // Increase the heatmap weight based on frequency and property magnitude
@@ -170,11 +233,11 @@ export class MapComponent implements OnInit {
     }, this.firstLayerId);
 
     this.map.addLayer({
-      id: id + '-circle',
+      id: id + '-circles',
       type: 'circle',
-      source: {
-        type: 'geojson',
-        data
+      source: id,
+      layout: {
+        visibility: 'visible'
       },
       paint: {
         'circle-radius': 3,
@@ -197,8 +260,6 @@ export class MapComponent implements OnInit {
         ]
       }
     }, this.firstLayerId);
-
-    console.log(this.map.getLayer(id + '-heatmap'));
   }
 
 }

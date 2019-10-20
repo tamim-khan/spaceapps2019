@@ -2,11 +2,6 @@
   <mat-toolbar-row class="toolbar-row">
     <p class="title">Ash</p>
 
-    <!-- <div class="slider-container">
-      <mat-slider tickInterval="1" min="1" max="7" step="1" value="1"></mat-slider>
-      <p class="label">Showing all fires for past X days</p>
-    </div> -->
-
     <button mat-stroked-button (click)="report()">
       Report Fire
       <mat-icon>report</mat-icon>
@@ -18,8 +13,13 @@
     </button>
 
     <button mat-stroked-button (click)="filter()">
-      Filter
+      {{ hasFilters ? 'Filter (Active)' : 'Filter' }}
       <mat-icon>filter_list</mat-icon>
+    </button>
+
+    <button mat-stroked-button (click)="about()">
+      About
+      <mat-icon>info</mat-icon>
     </button>
   </mat-toolbar-row>
 </mat-toolbar>

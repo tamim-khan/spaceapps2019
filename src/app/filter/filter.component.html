@@ -1,0 +1,24 @@
+<div class="container">
+  <p class="title">Filter Data</p>
+
+  <div class="checkbox-container">
+    <p>Type of fire reports to display</p>
+    <mat-checkbox [value]="data.showNasaFires" [(ngModel)]="data.showNasaFires">NASA Reports</mat-checkbox>
+    <mat-checkbox [value]="data.showUserFires" [(ngModel)]="data.showUserFires">User Reports</mat-checkbox>
+  </div>
+
+  <div class="slider-container">
+    <mat-slider thumbLabel tickInterval="1" min="1" max="7" step="1" [value]="data.time" [(ngModel)]="data.time"></mat-slider>
+    <p class="slider-label">Showing all fires in the world for past {{ time }} days</p>
+  </div>
+
+  <button mat-flat-button color="primary" (click)="close()">
+    Update
+    <mat-icon>refresh</mat-icon>
+  </button>
+
+  <button mat-flat-button color="primary" *ngIf="hasFilters" (click)="reset()">
+    Reset
+    <mat-icon>clear</mat-icon>
+  </button>
+</div>

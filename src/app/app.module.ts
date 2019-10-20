@@ -10,23 +10,31 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 // tslint:disable-next-line:max-line-length
-import { MatProgressSpinnerModule, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatSnackBar, MatSnackBarModule, MatSliderModule, MatDividerModule } from '@angular/material';
+import { MatProgressSpinnerModule, MatButtonModule, MatDialogModule, MatIconModule, MatToolbarModule, MatSnackBar, MatSnackBarModule, MatSliderModule, MatDividerModule, MatCheckboxModule } from '@angular/material';
 
 import { keys } from '../keys';
 import { FireReportComponent } from './fire-report/fire-report.component';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { FilterWindowComponent } from './filter-window/filter-window.component';
+import { AboutComponent } from './about/about.component';
+import { FilterComponent } from './filter/filter.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     MapComponent,
-    FireReportComponent
+    FireReportComponent,
+    AboutComponent,
+    FilterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FormsModule,
     MatProgressSpinnerModule,
     MatButtonModule,
+    MatCheckboxModule,
     MatIconModule,
     MatDividerModule,
     MatDialogModule,
@@ -40,8 +48,12 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
     AngularFirestoreModule,
     AngularFireStorageModule
   ],
+  entryComponents: [
+    FireReportComponent,
+    AboutComponent,
+    FilterComponent
+  ],
   providers: [],
-  entryComponents: [FireReportComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
