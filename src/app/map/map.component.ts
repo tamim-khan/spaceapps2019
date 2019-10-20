@@ -76,12 +76,37 @@ export class MapComponent implements OnInit {
             this.nasaData = res;
             this.updateData('nasa', res);
             setTimeout(() => this.hasData = true, 2500);
+            this.addPopup('nasa');
+            this.addPopup('user');
           }))
           .pipe(
             take(1)
           ).subscribe();
         }
       );
+    });
+  }
+
+  addPopup(id: string) {
+    this.map.on('click', id + '-circles', e => {
+      let date: Date;
+      if (e.features[0].properties.date) {
+        date = new Date(JSON.parse(e.features[0].properties.date).seconds * 1000);
+      } else {
+        date = new Date(e.features[0].properties.ACQ_DATE);
+      }
+      new mapboxgl.Popup()
+      .setLngLat(e.lngLat)
+      .setHTML(`<b>Date: ${date.toLocaleDateString()}</b>`)
+      .addTo(this.map);
+    });
+
+    this.map.on('mouseenter', id + '-circles', () => {
+      this.map.getCanvas().style.cursor = 'pointer';
+    });
+
+    this.map.on('mouseleave', id + '-circles', () => {
+      this.map.getCanvas().style.cursor = '';
     });
   }
 

@@ -15,7 +15,6 @@ import { MatProgressSpinnerModule, MatButtonModule, MatDialogModule, MatIconModu
 import { keys } from '../keys';
 import { FireReportComponent } from './fire-report/fire-report.component';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { FilterWindowComponent } from './filter-window/filter-window.component';
 import { AboutComponent } from './about/about.component';
 import { FilterComponent } from './filter/filter.component';
 import { FormsModule } from '@angular/forms';
