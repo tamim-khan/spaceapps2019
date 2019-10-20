@@ -29,9 +29,11 @@ export class FireReportComponent implements OnInit {
         if (pos) {
           this.addReport(pos.coords.longitude, pos.coords.latitude);
           this.snackbar.open('Added New Fire Report', 'Okay', { duration: 1500 });
+
+          this.dialogRef.close(true);
         }
 
-        this.dialogRef.close();
+        this.snackbar.open('You need to allow GPS usage in order to locate a fire', 'Okay', { duration: 1500 });
       },
       err => {
         console.log('Error ' + err);
@@ -40,6 +42,8 @@ export class FireReportComponent implements OnInit {
   }
 
   addReport(long: number, lat: number) {
+    const date = new Date();
+
     this.db.collection('fires').add({
       type: 'Feature',
       geometry: {
@@ -47,7 +51,9 @@ export class FireReportComponent implements OnInit {
         coordinates: [long, lat]
       },
       properties: {
-        date: new Date()
+        userReport: true,
+        date,
+        time: date.getHours() + ':' + date.getMinutes()
       }
     });
   }

@@ -104,8 +104,13 @@ export class MapComponent implements OnInit {
   addPopup(id: string) {
     this.map.on('click', id + '-circles', e => {
       let date: Date;
-      // TODO: Do this
-      let coords = [0, 0];
+      // @ts-ignore
+      const coords = e.features[0].geometry.coordinates;
+      const userReport = e.source === 'user';
+      const type = userReport ? 'User Report' : 'NASA Report';
+      let time = 'N/A';
+
+      console.log(e.features[0]);
 
       if (e.features[0].properties.date) {
         date = new Date(JSON.parse(e.features[0].properties.date).seconds * 1000);
@@ -113,13 +118,32 @@ export class MapComponent implements OnInit {
         date = new Date(e.features[0].properties.ACQ_DATE);
       }
 
-      new mapboxgl.Popup()
-      .setLngLat(e.lngLat)
-      .setHTML(`
+      if (e.features[0].properties.time) {
+        time = e.features[0].properties.time;
+      } else {
+        time = e.features[0].properties.ACQ_TIME.substring(0, 2) + ':' + e.features[0].properties.ACQ_TIME.substring(2, 4);
+      }
+
+      let html = `
         <b>Date Reported:</b> ${date.toLocaleDateString()}<br/>
-        <b>Coordinates:</b> (${coords[0]}, ${coords[1]})
-      `)
-      .addTo(this.map);
+        <b>Time Reported:</b> ${time}<br/>
+        <b>Coordinates:</b> <br/>
+          ${coords[0]},<br/>
+          ${coords[1]}<br/>
+        <b>Type:</b> ${type}<br/>
+      `;
+
+      if (!userReport) {
+        const day = e.features[0].properties.DAYNIGHT === 'D' ? 'Day' : 'Night';
+        html += `
+          <b>Day or Night:</b> ${day}<br/>
+        `;
+      }
+
+      new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(html)
+        .addTo(this.map);
     });
 
     this.map.on('mouseenter', id + '-circles', () => {
@@ -154,7 +178,7 @@ export class MapComponent implements OnInit {
   }
 
   filterData(data: any, func: any) {
-    let d = {
+    const d = {
       type: 'FeatureCollection',
       features: data.features.filter(func)
     };
@@ -189,7 +213,16 @@ export class MapComponent implements OnInit {
   }
 
   report() {
-    this.dialog.open(FireReportComponent);
+    this.dialog.open(FireReportComponent)
+      .afterClosed()
+      .pipe(
+        take(1)
+      )
+      .subscribe(res => {
+        if (res === true) {
+          this.getUserData();
+        }
+      });
   }
 
   filter() {
@@ -355,7 +388,7 @@ export class MapComponent implements OnInit {
         visibility: 'visible'
       },
       paint: {
-        'circle-radius': 3,
+        'circle-radius': 4,
         'circle-color': color,
         'circle-stroke-color': 'white',
         'circle-stroke-width': 1,
